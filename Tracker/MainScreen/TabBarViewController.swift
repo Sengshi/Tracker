@@ -21,19 +21,27 @@ class TabBarViewController: UITabBarController {
         // Первая вкладка - Трекеры
         let trackersVC = TrackersViewController()
         let trackersNav = UINavigationController(rootViewController: trackersVC)
+        let trackersIcon = UIImage(named: "tracker")?
+            .resized(to: CGSize(width: 28, height: 28))
+            .withRenderingMode(.alwaysTemplate)
+
         trackersNav.tabBarItem = UITabBarItem(
             title: "Трекеры",
-            image: UIImage(systemName: "record.circle.fill"),
-            selectedImage: UIImage(systemName: "record.circle.fill")
+            image: trackersIcon,
+            selectedImage: trackersIcon
         )
         
         // Вторая вкладка - Статистика
         let statisticsVC = StatisticsViewController()
         let statisticsNav = UINavigationController(rootViewController: statisticsVC)
+        let statisticsIcon = UIImage(named: "statistic")?
+            .resized(to: CGSize(width: 28, height: 28))
+            .withRenderingMode(.alwaysTemplate)
+
         statisticsNav.tabBarItem = UITabBarItem(
             title: "Статистика",
-            image: UIImage(named: "statistic"),
-            selectedImage: UIImage(named: "statistic")
+            image: statisticsIcon,
+            selectedImage: statisticsIcon,
         )
         
         viewControllers = [trackersNav, statisticsNav]
@@ -42,6 +50,15 @@ class TabBarViewController: UITabBarController {
     private func setupTabBarAppearance() {
         tabBar.tintColor = UIColor(red: 55/255, green: 114/255, blue: 231/255, alpha: 1)
         tabBar.unselectedItemTintColor = UIColor(red: 174/255, green: 175/255, blue: 180/255, alpha: 1)
+
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.stackedLayoutAppearance.selected.iconColor = tabBar.tintColor
+        appearance.stackedLayoutAppearance.normal.iconColor = tabBar.unselectedItemTintColor
+        
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+
     }
     
     private func setupConstraints() {
@@ -56,3 +73,11 @@ class TabBarViewController: UITabBarController {
     }
 }
 
+
+extension UIImage {
+    func resized(to size: CGSize) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { _ in
+            draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}

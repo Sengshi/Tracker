@@ -14,6 +14,14 @@ class TrackersViewController: UIViewController {
     private let textClear = UILabel()
     private let formLabel = UILabel()
     private let addTrackerButton = UIButton(type: .custom)
+
+    private let dateButton = UIButton(type: .system)
+    private let hiddenTextField = UITextField(frame: .zero)
+    private let datePicker = UIDatePicker()
+    
+    var categories: [TrackerCategory] = []
+    var completedTrackers: [TrackerRecord] = []
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +29,7 @@ class TrackersViewController: UIViewController {
         setupClearText()
         setupFormLabel()
         setupAddTrackerButton()
+        setupDateField()
         setupConstraint()
     }
     
@@ -60,6 +69,34 @@ class TrackersViewController: UIViewController {
 
     }
     
+    private func setupDateField () {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yy"
+
+        // Настройка кнопки
+        dateButton.setTitle(formatter.string(from: Date()), for: .normal)
+        dateButton.setTitleColor(.black, for: .normal)
+        dateButton.titleLabel?.font = .systemFont(ofSize: 17)
+        dateButton.contentHorizontalAlignment = .center
+        dateButton.addTarget(self, action: #selector(dateButtonTapped), for: .touchUpInside)
+        dateButton.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+        dateButton.layer.cornerRadius = 8
+        dateButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(dateButton)
+
+        // Настройка скрытого поля
+        hiddenTextField.inputView = datePicker
+        hiddenTextField.isHidden = true
+        view.addSubview(hiddenTextField)
+
+        // Настройка UIDatePicker
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+    }
+    
     
     
     private func setupConstraint (){
@@ -78,9 +115,24 @@ class TrackersViewController: UIViewController {
             addTrackerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6),
             formLabel.topAnchor.constraint(equalTo: addTrackerButton.bottomAnchor, constant: 1),
             formLabel.leadingAnchor.constraint(equalTo: addTrackerButton.leadingAnchor, constant: 10),
-//            formLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-//            formLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            dateButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 49),
+            dateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            dateButton.widthAnchor.constraint(equalToConstant: 77),
+            dateButton.heightAnchor.constraint(equalToConstant: 34),
         ])
 
+    }
+    
+    @objc private func dateButtonTapped() {
+        hiddenTextField.becomeFirstResponder()
+    }
+
+    @objc private func dateChanged(_ sender: UIDatePicker) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yy"
+        dateButton.setTitle(formatter.string(from: sender.date), for: .normal)
+
+        // Обновляем данные под новую дату
+        //collectionView.reloadData()
     }
 }
