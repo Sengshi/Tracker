@@ -18,6 +18,8 @@ class TrackersViewController: UIViewController {
     private let dateButton = UIButton(type: .system)
     private let hiddenTextField = UITextField(frame: .zero)
     private let datePicker = UIDatePicker()
+
+    let formatter = DateFormatter()
     
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
@@ -70,7 +72,6 @@ class TrackersViewController: UIViewController {
     }
     
     private func setupDateField () {
-        let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yy"
 
         // Настройка кнопки
@@ -85,16 +86,19 @@ class TrackersViewController: UIViewController {
         
         view.addSubview(dateButton)
 
+        // Настройка UIDatePicker
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+
         // Настройка скрытого поля
         hiddenTextField.inputView = datePicker
         hiddenTextField.isHidden = true
         view.addSubview(hiddenTextField)
 
-        // Настройка UIDatePicker
-        datePicker.preferredDatePickerStyle = .wheels
-        datePicker.datePickerMode = .date
-        datePicker.locale = Locale(identifier: "ru_RU")
-        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+
     }
     
     
@@ -128,7 +132,6 @@ class TrackersViewController: UIViewController {
     }
 
     @objc private func dateChanged(_ sender: UIDatePicker) {
-        let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yy"
         dateButton.setTitle(formatter.string(from: sender.date), for: .normal)
 
