@@ -14,11 +14,13 @@ class TrackersViewController: UIViewController {
     private let textClear = UILabel()
     private let formLabel = UILabel()
     private let addTrackerButton = UIButton(type: .custom)
-
+    
     private let dateButton = UIButton(type: .system)
-    private let hiddenTextField = UITextField(frame: .zero)
+    private let hiddenTextField = UITextField()
     private let datePicker = UIDatePicker()
-
+    
+    private let searchTextField = UISearchBar()
+    
     let formatter = DateFormatter()
     
     var categories: [TrackerCategory] = []
@@ -30,8 +32,9 @@ class TrackersViewController: UIViewController {
         setupClearLogo()
         setupClearText()
         setupFormLabel()
-        setupAddTrackerButton()
-        setupDateField()
+//        setupAddTrackerButton()
+//        setupDateField()
+        setupSearchField()
         setupConstraint()
     }
     
@@ -50,7 +53,7 @@ class TrackersViewController: UIViewController {
         textClear.translatesAutoresizingMaskIntoConstraints = false
         textClear.accessibilityIdentifier = "textClearLabel"
         view.addSubview(textClear)
-
+        
     }
     
     private func setupFormLabel() {
@@ -68,39 +71,54 @@ class TrackersViewController: UIViewController {
         addTrackerButton.translatesAutoresizingMaskIntoConstraints = false
         addTrackerButton.accessibilityIdentifier = "addTrackerButton"
         view.addSubview(addTrackerButton)
-
+        
     }
     
-    private func setupDateField () {
+    private func setupDateField() {
         formatter.dateFormat = "dd.MM.yy"
-
-        // Настройка кнопки
-        dateButton.setTitle(formatter.string(from: Date()), for: .normal)
-        dateButton.setTitleColor(.black, for: .normal)
-        dateButton.titleLabel?.font = .systemFont(ofSize: 17)
-        dateButton.contentHorizontalAlignment = .center
-        dateButton.addTarget(self, action: #selector(dateButtonTapped), for: .touchUpInside)
-        dateButton.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
-        dateButton.layer.cornerRadius = 8
-        dateButton.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(dateButton)
-
         // Настройка UIDatePicker
         datePicker.preferredDatePickerStyle = .compact
         datePicker.datePickerMode = .date
         datePicker.locale = Locale(identifier: "ru_RU")
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
-
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(datePicker)
+        
+        // Настройка кнопки
+                dateButton.setTitle(formatter.string(from: Date()), for: .normal)
+                dateButton.setTitleColor(.black, for: .normal)
+                dateButton.titleLabel?.font = .systemFont(ofSize: 17)
+                dateButton.contentHorizontalAlignment = .center
+                dateButton.addTarget(self, action: #selector(dateButtonTapped), for: .touchUpInside)
+                dateButton.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+                dateButton.layer.cornerRadius = 8
+                dateButton.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(dateButton)
+        
         // Настройка скрытого поля
-        hiddenTextField.inputView = datePicker
-        hiddenTextField.isHidden = true
-        view.addSubview(hiddenTextField)
-
-
+        //        view.addSubview(hiddenTextField)
+        //        hiddenTextField.inputView = datePicker
+        //        hiddenTextField.isHidden = true
+        
     }
     
+    private func setupSearchField() {
+        searchTextField.placeholder = "Поиск"
+        searchTextField.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
+        
+//        searchTextField.backgroundColor = UIColor(red: 118/255, green: 118/255, blue: 128/255, alpha: 0.12)
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(searchTextField)
+    }
+    
+    private func setupNavigationBar() {
+        let addButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(addTapped))
+        navigationItem.leftBarButtonItem = addButton
+        
+        dateButton = UIBarButtonItem(title: formattedDate(Date()), style: .plain, target: self, action: #selector(dateButtonTapped))
+        navigationItem.rightBarButtonItem = dateButton
+    }
     
     
     private func setupConstraint (){
@@ -119,23 +137,46 @@ class TrackersViewController: UIViewController {
             addTrackerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6),
             formLabel.topAnchor.constraint(equalTo: addTrackerButton.bottomAnchor, constant: 1),
             formLabel.leadingAnchor.constraint(equalTo: addTrackerButton.leadingAnchor, constant: 10),
-            dateButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 49),
-            dateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            dateButton.widthAnchor.constraint(equalToConstant: 77),
-            dateButton.heightAnchor.constraint(equalToConstant: 34),
-        ])
+            datePicker.topAnchor.constraint(equalTo: view.topAnchor, constant: 49),
+            datePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+//            datePicker.widthAnchor.constraint(equalToConstant: 77),
+//            datePicker.heightAnchor.constraint(equalToConstant: 34),
+            searchTextField.topAnchor.constraint(equalTo: formLabel.bottomAnchor, constant: 7),
+            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchTextField.heightAnchor.constraint(equalToConstant: 36),
 
+        ])
+        
     }
     
     @objc private func dateButtonTapped() {
         hiddenTextField.becomeFirstResponder()
     }
+    
+    @objc private func addTapped() {
+        //
+    }
+    
+//    @objc private func dateButtonTapped() {
+//        hiddenTextField.becomeFirstResponder()
+//    }
+    @objc private func dateButtonTapped() {
+
+    }
 
     @objc private func dateChanged(_ sender: UIDatePicker) {
-        formatter.dateFormat = "dd.MM.yy"
-        dateButton.setTitle(formatter.string(from: sender.date), for: .normal)
-
-        // Обновляем данные под новую дату
-        //collectionView.reloadData()
+        dateButton.title = formattedDate(sender.date)
     }
+    
+    private func formattedDate(_ date: Date) -> String {
+        
+    }
+//    @objc private func dateChanged(_ sender: UIDatePicker) {
+//        formatter.dateFormat = "dd.MM.yy"
+//        dateButton.setTitle(formatter.string(from: sender.date), for: .normal)
+//        
+//        // Обновляем данные под новую дату
+//        //        collectionView.reloadData()
+//    }
 }
